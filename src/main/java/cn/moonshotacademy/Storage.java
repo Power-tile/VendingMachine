@@ -14,7 +14,7 @@ public class Storage {
     }
 
     public void addItem(Product p) {
-        Optional<ProductTemplate> templateInMenu = productMenu.keySet().stream().filter(curr -> curr.equals(p.getTemplate())).findFirst();
+        Optional<ProductTemplate> templateInMenu = productMenu.keySet().stream().filter(curr -> curr.equivalent(p.getTemplate())).findFirst();
         if (templateInMenu.isEmpty()) {
             LinkedList<Product> tmpList = new LinkedList<Product>();
             tmpList.add(p);

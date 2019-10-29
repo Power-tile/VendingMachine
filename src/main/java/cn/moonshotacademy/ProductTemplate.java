@@ -23,7 +23,7 @@ public class ProductTemplate {
         cost = _cost;
     }
 
-    public boolean equals(Object t) {
+    public boolean equivalent(Object t) {
         if (t.getClass().equals(ProductTemplate.class)) {
             return ((ProductTemplate)t).getName().equals(this.name) && ((ProductTemplate)t).getCost().equals(this.cost);
         } else {
