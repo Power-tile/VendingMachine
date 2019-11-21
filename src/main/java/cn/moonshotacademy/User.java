@@ -1,26 +1,25 @@
 package cn.moonshotacademy;
 
-public class User {
+import cn.moonshotacademy.interfaces.UserTemplate;
+
+public class User implements UserTemplate {
     private String name;
     private Integer balance;
     private String password;
+    private Integer storageIndex;
 
-    public User(String _name, Integer _balance, String _password) { // TODO: REPEATED USERNAME?
-        name = _name;
-        balance = _balance;
-        password = _password;
-    }
-    public User(String _name, String _password, Integer _storageIndex) {
-        name = _name;
-        balance = Integer.valueOf(1000);
-        password = _password;
+    public User(String name, String password, Integer balance, Integer storageIndex) {
+        this.name = name;
+        this.password = password;
+        this.balance = Integer.valueOf(balance);
+        this.storageIndex = storageIndex;
     }
     
     public Integer getBalance() {
-        return balance;
+        return this.balance;
     }
-    public void addBalance(Integer _value) {
-        balance = Integer.valueOf(balance.intValue() + _value.intValue());
+    public void addBalance(Integer value) {
+        this.balance = Integer.valueOf(this.balance.intValue() + value.intValue());
     }
 
     public String getName() {
@@ -30,10 +29,17 @@ public class User {
         name = _name;
     }
 
-    public boolean checkPassword(String _password) {
-        return password.equals(_password);
+    public Integer getStorageIndex() {
+        return this.storageIndex;
     }
-    public void changePassword(String _password) {
-        password = _password;
+    public void setStorageIndex(Integer storageIndex) {
+        this.storageIndex = storageIndex;
+    }
+
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
+    }
+    public void changePassword(String password) {
+        this.password = password;
     }
 }

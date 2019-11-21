@@ -1,20 +1,20 @@
 package cn.moonshotacademy;
 
-import cn.moonshotacademy.Storage;
-import cn.moonshotacademy.UI;
-import cn.moonshotacademy.User;
+import cn.moonshotacademy.interfaces.*;
+import cn.moonshotacademy.products.*; // TODO: ADD BEAN SUPPORT
+
 import java.util.ArrayList;
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Date;
 
 public class Controller {
     private static Controller _instance;
 
-    private static ArrayList<ProductTemplate> templateList = new ArrayList<ProductTemplate>();
-    private static ArrayList<Storage> storageList = new ArrayList<Storage>();
-    private static ArrayList<User> userList = new ArrayList<User>();
-    private static ArrayList<UI> uiList = new ArrayList<UI>();
+    private static ArrayList<String> templateList = new ArrayList<String>();
+    private static ArrayList<StorageTemplate> storageList = new ArrayList<StorageTemplate>();
+    private static ArrayList<UserTemplate> userList = new ArrayList<UserTemplate>();
+    private static ArrayList<UITemplate> uiList = new ArrayList<UITemplate>();
 
     public static Controller getInstance() {
         if (_instance == null) {
@@ -24,109 +24,106 @@ public class Controller {
     }
 
     private Controller() {
+        // TODO: Delete this initialize after getting Spring
         Storage first = new Storage();
         storageList.add(first);
-        addItemToStorage(1, new Product(new ProductTemplate("H2SO4", 10), Date.valueOf("2016-3-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("H2SO4", 10), Date.valueOf("2018-11-30")));
-        addItemToStorage(1, new Product(new ProductTemplate("HClO", 30), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HClO", 30), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HClO", 30), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HClO", 30), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HClO", 30), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HClO", 30), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HClO", 30), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        addItemToStorage(1, new Product(new ProductTemplate("HCN", 1000), Date.valueOf("2019-8-5")));
-        for (int i = 1; i <= 100000; i++) {
-            addItemToStorage(1, new Product(new ProductTemplate("HOH", 1), Date.valueOf("2019-8-5")));
+        for (int i = 0; i < 10000; i++) {
+            storageList.get(0).addItem(new HOH(new Date()));
+        }
+        for (int i = 0; i < 100; i++) {
+            storageList.get(0).addItem(new HClO(new Date()));
         }
         
-        addUser("Power_tile", 10000000, "Hello, World!");
-        addUser("admin", 1, "admin");
+        addUser("Power_tile", "Hello, World!", 1000000, 1);
+        addUser("admin", "admin", 1, 1);
 
         addUI(Integer.valueOf(1));
     }
 
-    public Integer getStorageListCount() {
+    public Integer getStorageTemplateListCount() {
         return Integer.valueOf(storageList.size());
     }
-    public ArrayList<Storage> getStorageList() {
+    public ArrayList<StorageTemplate> getStorageTemplateList() {
         return storageList;
     }
-    public ArrayList<ProductTemplate> getTemplateList() {
+    public Integer getProductCost(Integer storageIndex, String t, Integer index) {
+        return storageList.get(storageIndex.intValue() - 1).queryCost(t, index);
+    }
+    public ArrayList<String> getTemplateList() {
         return templateList;
     }
-    public ArrayList<User> getUserList() {
+    public ArrayList<UserTemplate> getUserList() {
         return userList;
     }
-    public ArrayList<UI> getUIList() {
+    public ArrayList<UITemplate> getUIList() {
         return uiList;
     }
-
-    public HashMap<ProductTemplate, Integer> getStorageMenu(Integer index) {
+    public HashMap<String, Integer> getStorageMenu(Integer index) {
         return storageList.get(index.intValue() - 1).getMenuDetail();
     }
-    public Integer getTemplateCount(Integer storageIndex, ProductTemplate template) {
+    public Integer getTemplateCount(Integer storageIndex, String template) {
         return storageList.get(storageIndex.intValue() - 1).querySize(template);
     }
 
-    public void addUser(User user) {
+    public void addUser(UserTemplate user) {
         userList.add(user);
     }
-    public void addUser(String name, Integer balance, String password) {
-        userList.add(new User(name, balance, password));
+    public void addUser(String name, String password, Integer balance, Integer storageIndex) {
+        // TODO: user init
+        userList.add(new User(name, password, balance, storageIndex));
     }
 
-    public User checkUserName(String name) {
-        Optional<User> tmp = userList.stream().filter(curr -> curr.getName().equals(name)).findFirst();
+    public UserTemplate checkUserName(String name) {
+        Optional<UserTemplate> tmp = userList.stream().filter(curr -> curr.getName().equals(name)).findFirst();
         if (tmp.isEmpty()) {
             return null;
         } else {
             return tmp.get();
         }
     }
-    public boolean checkUserPassword(User user, String password) {
+    public boolean checkUserPassword(UserTemplate user, String password) {
         return user.checkPassword(password);
     }
-    public boolean checkTemplate(Integer storageIndex, ProductTemplate template) {
+    public boolean checkTemplate(Integer storageIndex, String template) {
         return storageList.get(storageIndex - 1).queryTemplate(template);
     }
-    public boolean checkSize(Integer storageIndex, ProductTemplate template, Integer size) {
+    public boolean checkSize(Integer storageIndex, String template, Integer size) {
         return storageList.get(storageIndex - 1).querySize(template).intValue() >= size.intValue();
     }
 
     public void addUI(Integer storageIndex) {
+        // TODO: import bean for UI construction
         uiList.add(new UI(storageIndex));
     }
-    public UI getUI(Integer index) {
+    public UITemplate getUI(Integer index) {
         return uiList.get(index.intValue() - 1);
     }
 
-    public boolean addItemToStorage(Integer storageIndex, Product p) {
+    public boolean addItemToStorageTemplate(Integer storageIndex, ProductTemplate p) {
         if (storageIndex.intValue() > storageList.size()) {
-            return false;
+            return false; // TODO: throw an exception
         } else {
-            if (!templateList.contains(p.getTemplate())) {
-                templateList.add(p.getTemplate());
+            if (!templateList.contains(p.getName())) {
+                templateList.add(p.getName());
             }
             storageList.get(storageIndex.intValue() - 1).addItem(p);
             return true;
        }
     }
-    public ArrayList<Product> deleteItemFromStorage(Integer storageIndex, ProductTemplate t, Integer count) {
-        return storageList.get(storageIndex - 1).removeItem(t, count);
+    public ArrayList<ProductTemplate> deleteItemFromStorageTemplate(Integer storageIndex, String template, Integer count) {
+        return storageList.get(storageIndex - 1).removeItem(template, count);
     }
 
-    public ArrayList<Product> request(User user, Integer storageIndex, ProductTemplate t, Integer count) {
-        user.addBalance(-t.getCost() * count.intValue());
-        return deleteItemFromStorage(storageIndex, t, count);
+    public ArrayList<ProductTemplate> request(UserTemplate user, Integer storageIndex, String t, Integer count) {
+        user.addBalance(-calculateCost(storageIndex, t, count));
+        return deleteItemFromStorageTemplate(storageIndex, t, count);
+    }
+
+    public Integer calculateCost(Integer storageIndex, String t, Integer count) {
+        int cost = 0;
+        for (int i = 0; i < count; i++) {
+            cost += getProductCost(storageIndex, t, count).intValue();
+        }
+        return Integer.valueOf(cost);
     }
 }
