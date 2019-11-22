@@ -6,7 +6,8 @@
 
   <groupId>cn.moonshotacademy</groupId>
   <artifactId>VendingMachine</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
+  <description>Reconstructed code with interfaces, exceptions, and product classes</description>
 
   <name>VendingMachine</name>
   <!-- FIXME change it to the project's website -->
