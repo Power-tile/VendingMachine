@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="controller" class="cn.moonshotacademy.Controller" scope="singleton" />
+
+    <bean id="user1" class="cn.moonshotacademy.User" scope="prototype">
+        <property name="name" value="Power_tile" />
+        <property name="password" value="Hello, World!" />
+        <property name="balance" value="1000000" />
+        <property name="storageIndex" value="1" />
+    </bean>
+    <bean id="user2" class="cn.moonshotacademy.User" scope="prototype">
+        <property name="name" value="admin" />
+        <property name="password" value="admin" />
+        <property name="balance" value="1" />
+        <property name="storageIndex" value="1" />
+    </bean>
+
+    <bean id="now" class="java.util.Date" />
+
+    <bean id="hoh" class="cn.moonshotacademy.products.HOH" scope="prototype">
+        <constructor-arg name="creationTime" ref="now" />
+    </bean>
+    <bean id="h2so4" class="cn.moonshotacademy.products.H2SO4" scope="prototype">
+        <constructor-arg name="creationTime" ref="now" />
+    </bean>
+    <bean id="hclo" class="cn.moonshotacademy.products.HClO" scope="prototype">
+        <constructor-arg name="creationTime" ref="now" />
+    </bean>
+    <bean id="hcn" class="cn.moonshotacademy.products.HCN" scope="prototype">
+        <constructor-arg name="creationTime" ref="now" />
+    </bean>
+
+</beans>

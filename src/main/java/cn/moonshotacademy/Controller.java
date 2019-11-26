@@ -9,35 +9,13 @@ import java.util.Optional;
 import java.util.Date;
 
 public class Controller {
-    private static Controller _instance;
-
     private static ArrayList<String> templateList = new ArrayList<String>();
     private static ArrayList<StorageTemplate> storageList = new ArrayList<StorageTemplate>();
     private static ArrayList<UserTemplate> userList = new ArrayList<UserTemplate>();
     private static ArrayList<UITemplate> uiList = new ArrayList<UITemplate>();
 
-    public static Controller getInstance() {
-        if (_instance == null) {
-            _instance = new Controller();
-        }
-        return _instance;
-    }
-
     private Controller() {
-        // TODO: Delete this initialize after getting Spring
-        Storage first = new Storage();
-        storageList.add(first);
-        for (int i = 0; i < 10000; i++) {
-            storageList.get(0).addItem(new HOH(new Date()));
-        }
-        for (int i = 0; i < 100; i++) {
-            storageList.get(0).addItem(new HClO(new Date()));
-        }
         
-        addUser("Power_tile", "Hello, World!", 1000000, 1);
-        addUser("admin", "admin", 1, 1);
-
-        addUI(Integer.valueOf(1));
     }
 
     public Integer getStorageTemplateListCount() {
@@ -72,6 +50,9 @@ public class Controller {
         // TODO: user init
         userList.add(new User(name, password, balance, storageIndex));
     }
+    public void addStorage(Storage storage) {
+        storageList.add(storage);
+    }
 
     public UserTemplate checkUserName(String name) {
         Optional<UserTemplate> tmp = userList.stream().filter(curr -> curr.getName().equals(name)).findFirst();
@@ -93,13 +74,13 @@ public class Controller {
 
     public void addUI(Integer storageIndex) {
         // TODO: import bean for UI construction
-        uiList.add(new UI(storageIndex));
+        uiList.add(new UI(storageIndex, this));
     }
     public UITemplate getUI(Integer index) {
         return uiList.get(index.intValue() - 1);
     }
 
-    public boolean addItemToStorageTemplate(Integer storageIndex, ProductTemplate p) {
+    public boolean addItemToStorage(Integer storageIndex, Product p) {
         if (storageIndex.intValue() > storageList.size()) {
             return false; // TODO: throw an exception
         } else {
@@ -108,13 +89,13 @@ public class Controller {
             }
             storageList.get(storageIndex.intValue() - 1).addItem(p);
             return true;
-       }
+        }
     }
-    public ArrayList<ProductTemplate> deleteItemFromStorageTemplate(Integer storageIndex, String template, Integer count) {
+    public ArrayList<Product> deleteItemFromStorageTemplate(Integer storageIndex, String template, Integer count) {
         return storageList.get(storageIndex - 1).removeItem(template, count);
     }
 
-    public ArrayList<ProductTemplate> request(UserTemplate user, Integer storageIndex, String t, Integer count) {
+    public ArrayList<Product> request(UserTemplate user, Integer storageIndex, String t, Integer count) {
         user.addBalance(-calculateCost(storageIndex, t, count));
         return deleteItemFromStorageTemplate(storageIndex, t, count);
     }

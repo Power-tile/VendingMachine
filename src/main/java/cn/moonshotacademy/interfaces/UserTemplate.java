@@ -8,5 +8,5 @@ public interface UserTemplate {
     public Integer getStorageIndex();
     public void setStorageIndex(Integer storageIndex);
     public boolean checkPassword(String password);
-    public void changePassword(String password);
+    public void setPassword(String password);
 }

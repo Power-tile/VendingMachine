@@ -6,8 +6,8 @@
 
   <groupId>cn.moonshotacademy</groupId>
   <artifactId>VendingMachine</artifactId>
-  <version>1.1</version>
-  <description>Reconstructed code with interfaces, exceptions, and product classes</description>
+  <version>1.2</version>
+  <description>Add spring support to vending machine</description>
 
   <name>VendingMachine</name>
   <!-- FIXME change it to the project's website -->
@@ -25,6 +25,36 @@
       <artifactId>junit</artifactId>
       <version>4.11</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>5.0.7.RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>5.0.7.RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>5.0.7.RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-expression</artifactId>
+      <version>5.0.7.RELEASE</version>
     </dependency>
   </dependencies>
 

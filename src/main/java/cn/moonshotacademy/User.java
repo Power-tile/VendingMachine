@@ -8,6 +8,7 @@ public class User implements UserTemplate {
     private String password;
     private Integer storageIndex;
 
+    public User() {}
     public User(String name, String password, Integer balance, Integer storageIndex) {
         this.name = name;
         this.password = password;
@@ -20,6 +21,9 @@ public class User implements UserTemplate {
     }
     public void addBalance(Integer value) {
         this.balance = Integer.valueOf(this.balance.intValue() + value.intValue());
+    }
+    public void setBalance(Integer value) {
+        this.balance = value;
     }
 
     public String getName() {
@@ -39,7 +43,7 @@ public class User implements UserTemplate {
     public boolean checkPassword(String password) {
         return this.password.equals(password);
     }
-    public void changePassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 }

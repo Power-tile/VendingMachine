@@ -22,9 +22,12 @@ public class UI implements UITemplate {
     private boolean pwdChange;
     private String newPassword;
 
-    public UI(Integer _storageIndex) {
+    private Controller controller;
+
+    public UI(Integer storageIndex, Controller controller) {
         scanner = new Scanner(System.in);
-        storageIndex = _storageIndex;
+        this.storageIndex = storageIndex;
+        this.controller = controller;
         logout(0);
     }
 
@@ -52,7 +55,7 @@ public class UI implements UITemplate {
     }
 
     public ArrayList<String> outputMenu() {
-        HashMap<String, Integer> info = Controller.getInstance().getStorageMenu(storageIndex);
+        HashMap<String, Integer> info = this.controller.getStorageMenu(storageIndex);
 
         System.out.printf("-1: Logout\n");
         System.out.printf("0: Change Password, $0; Product Remaining: --\n");
@@ -62,8 +65,8 @@ public class UI implements UITemplate {
         for (String i : info.keySet()) {
             System.out.printf("%d: %s, $%d; Product Remaining: %d\n", ++num,
                                                                       i,
-                                                                      Controller.getInstance().getProductCost(storageIndex, i, 0),
-                                                                      Controller.getInstance().getTemplateCount(storageIndex, i));
+                                                                      this.controller.getProductCost(storageIndex, i, 0),
+                                                                      this.controller.getTemplateCount(storageIndex, i));
             seq.add(i);
         }
         return seq;
@@ -73,7 +76,6 @@ public class UI implements UITemplate {
         while (true) {
             try {
                 process();
-                status++;
             } catch (UserNotExistException | InvalidInputException | PasswordIncorrectException
                     | NewPasswordIncorrectException | NotEnoughMoneyException | NotEnoughStorageException e) {
                 System.out.println(e.getMessage());
@@ -92,13 +94,13 @@ public class UI implements UITemplate {
         switch (status) {
             case 0: { // Initialize
                 System.out.println("Welcome to Daniel's Vending Machine!");
-                logout(0);
+                logout(0); // logout with hello
                 break;
             }
             case 1: { // Input Username
                 System.out.print("Please enter your username: ");
                 String username = scanner.nextLine();
-                currentUser = Controller.getInstance().checkUserName(username);
+                currentUser = this.controller.checkUserName(username);
                 if (currentUser == null) {
                     throw new UserNotExistException("User " + username + " does not exist! Please re-enter your username.");
                 }
@@ -109,7 +111,7 @@ public class UI implements UITemplate {
                 String pwd = scanner.nextLine();
                 if (remainingTry.intValue() == 0) {
                     throw new PasswordTrialZeroedException("Sorry, you are out of your password chance. Please re-enter your username.");
-                } else if (!Controller.getInstance().checkUserPassword(currentUser, pwd)) {
+                } else if (!this.controller.checkUserPassword(currentUser, pwd)) {
                     remainingTry--;
                     throw new PasswordIncorrectException("Password incorrect! Please re-enter your password. You have " + remainingTry + " chances left.");
                 } else {
@@ -131,14 +133,14 @@ public class UI implements UITemplate {
 
                         System.out.printf("You choosed the product %s. Remaining Products: %d, Cost: $%d\n",
                                           templateChoice,
-                                          Controller.getInstance().getTemplateCount(storageIndex, templateChoice),
-                                          Controller.getInstance().getProductCost(storageIndex, templateChoice, 0));
+                                          this.controller.getTemplateCount(storageIndex, templateChoice),
+                                          this.controller.getProductCost(storageIndex, templateChoice, 0));
                     } else if (templateIndex.intValue() == 0) { // Changing password
                         pwdChange = true;
                     } else if (templateIndex.intValue() == -1) {
                         System.out.printf("See you next time, %s!\n", currentUser.getName());
                         logout(0);
-                        break;
+                        return; // Logout with hello
                     } else {
                         throw new InvalidInputException("Your input isn't a valid integer! Please re-enter your choice."); // invalid integer input
                     }
@@ -146,7 +148,6 @@ public class UI implements UITemplate {
                     scanner.nextLine();
                     throw new InvalidInputException("Your input isn't a valid integer! Please re-enter your choice."); // invalid integer input
                 }
-                
                 break;
             }
             case 4: { // Input count / pwd
@@ -171,24 +172,24 @@ public class UI implements UITemplate {
                         if (templateCount == 0) {
                             System.out.println("Please re-choose your product: ");
                             logout(2);
-                            break;
+                            return; // Init
                         } else if (templateCount == -1) {
                             System.out.printf("See you next time, %s!\n", currentUser.getName());
                             logout(0);
-                            break;
-                        } else if (templateCount > 0 && !Controller.getInstance().checkSize(storageIndex, templateChoice, templateCount)) {
+                            return; // Init
+                        } else if (templateCount > 0 && !this.controller.checkSize(storageIndex, templateChoice, templateCount)) {
                             throw new NotEnoughStorageException("Not enough product! We only have "
-                                                              + Controller.getInstance().getTemplateCount(storageIndex, templateChoice)
+                                                              + this.controller.getTemplateCount(storageIndex, templateChoice)
                                                               + " products. Please select a smaller amount.");
                         } else if (templateCount < -1) {
                             throw new InvalidInputException("Your input isn't a valid integer! Please re-enter your choice."); // invalid integer input
-                        } else if (Controller.getInstance().calculateCost(storageIndex, templateChoice, templateCount)> currentUser.getBalance().intValue()) {
+                        } else if (this.controller.calculateCost(storageIndex, templateChoice, templateCount)> currentUser.getBalance().intValue()) {
                             throw new NotEnoughMoneyException("Sorry, you don't have enough money. Please choose another product, or re-enter the count of the product.");
                         }
 
                         // output result
                         System.out.printf("You are trying to by %d %s, which will cost you $%d.\n",
-                                            templateCount, templateChoice, Controller.getInstance().calculateCost(storageIndex, templateChoice, templateCount));
+                                            templateCount, templateChoice, this.controller.calculateCost(storageIndex, templateChoice, templateCount));
                     } else {
                         scanner.nextLine();
                         throw new InvalidInputException("Your input isn't a valid integer! Please re-enter your choice."); // invalid integer input
@@ -203,7 +204,7 @@ public class UI implements UITemplate {
                     if (remainingTry == 0) {
                         throw new PasswordTrialZeroedException("Sorry, you are out of your changing password chance. Please re-select a product.");
                     } else if (newPassword.equals(confirmPassword)) {
-                        currentUser.changePassword(newPassword);
+                        currentUser.setPassword(newPassword);
                         System.out.print("Password Changed!\n");
                         remainingTry = 3;
                     } else {
@@ -215,12 +216,12 @@ public class UI implements UITemplate {
                     String confirmState = scanner.nextLine();
                     if (confirmState.length() == 1) { // input size == 1
                         if (confirmState.startsWith("Y") || confirmState.startsWith("y")) { // confirm payment
-                            Controller.getInstance().request(currentUser, storageIndex, templateChoice, templateCount);
+                            this.controller.request(currentUser, storageIndex, templateChoice, templateCount);
                             System.out.printf("Purchase complete! Please take away your product(s). Remaining balance: %d\n", currentUser.getBalance());
                         } else if (confirmState.startsWith("N") || confirmState.startsWith("n")) { // abandon payment
                             System.out.println("Abandoning payment ...");
                             logout(2);
-                            break;
+                            return; // Init
                         } else { // input incorrect
                             throw new InvalidInputException("Unable to understand your choice! Did you input Y or N?");
                         }
@@ -237,11 +238,11 @@ public class UI implements UITemplate {
                     if (repeatState.startsWith("Y") || repeatState.startsWith("y")) { // confirm payment
                         System.out.printf("Happy vending! Your remaining balance: $%d\n", currentUser.getBalance());
                         logout(2);
-                        break;
+                        return; // Init
                     } else if (repeatState.startsWith("N") || repeatState.startsWith("n")) { // abandon payment
                         System.out.printf("Thank you! See you next time, %s!\n", currentUser.getName());
                         logout(0);
-                        break;
+                        return; // Logout with hello
                     } else { // input incorrect
                         throw new InvalidInputException("Unable to understand your choice! Did you input Y or N?");
                     }
@@ -250,5 +251,6 @@ public class UI implements UITemplate {
                 }
             }
         }
+        status++;
     }
 }

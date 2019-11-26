@@ -1,6 +1,6 @@
 package cn.moonshotacademy;
 
-import cn.moonshotacademy.interfaces.ProductTemplate;
+import cn.moonshotacademy.Product;
 import cn.moonshotacademy.interfaces.StorageTemplate;
 
 import java.util.HashMap;
@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class Storage implements StorageTemplate {
-    private HashMap<String, LinkedList<ProductTemplate>> productMenu;
+    private HashMap<String, LinkedList<Product>> productMenu;
+    private HashMap<String, Product> productInfo;
 
     public Storage() {
-        productMenu = new HashMap<String, LinkedList<ProductTemplate>>();
+        productMenu = new HashMap<String, LinkedList<Product>>();
+        productInfo = new HashMap<String, Product>();
     }
 
     public Integer getTypeCount() {
@@ -26,22 +28,23 @@ public class Storage implements StorageTemplate {
         return ret;
     }
 
-    public void addItem(ProductTemplate p) {
+    public void addItem(Product p) {
         Optional<String> templateInMenu = productMenu.keySet().stream().filter(curr -> (p.getName().equals(curr))).findFirst();
         if (templateInMenu.isEmpty()) {
-            LinkedList<ProductTemplate> tmpList = new LinkedList<ProductTemplate>();
+            LinkedList<Product> tmpList = new LinkedList<Product>();
             tmpList.add(p);
             productMenu.put(p.getName(), tmpList);
+            productInfo.put(p.getName(), p.clone());
         } else {
             productMenu.get(templateInMenu.get()).add(p);
         }
     }
 
-    public ArrayList<ProductTemplate> removeItem(String template, Integer count) {
+    public ArrayList<Product> removeItem(String template, Integer count) {
         if (productMenu.get(template).isEmpty()) {
             return null;
         } else {
-            ArrayList<ProductTemplate> ret = new ArrayList<ProductTemplate>();
+            ArrayList<Product> ret = new ArrayList<Product>();
             for (int i = 1; i <= count.intValue(); i++) {
                 ret.add(productMenu.get(template).removeFirst());
             }
@@ -56,6 +59,6 @@ public class Storage implements StorageTemplate {
         return Integer.valueOf(productMenu.get(template).size());
     }
     public Integer queryCost(String template, Integer cnt) {
-        return Integer.valueOf(productMenu.get(template).getFirst().getCost(cnt));
+        return Integer.valueOf(productInfo.get(template).getCost(0));
     }
 }

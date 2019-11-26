@@ -1,9 +1,8 @@
 package cn.moonshotacademy;
 
-import cn.moonshotacademy.interfaces.ProductTemplate;
 import java.util.Date;
 
-public class Product implements ProductTemplate {
+public class Product {
     protected String name;
     protected Integer cost;
     protected Date creationTime;
@@ -22,7 +21,7 @@ public class Product implements ProductTemplate {
     }
 
     public Integer getCost(Integer cnt) {
-        return cost;
+        return this.cost;
     }
     public void setCost(Integer cost) {
         this.cost = cost;
@@ -30,5 +29,9 @@ public class Product implements ProductTemplate {
 
     public Date getCreationTime() {
         return this.creationTime;
+    }
+
+    public Product clone() {
+        return new Product(this.name, this.cost, this.creationTime);
     }
 }
